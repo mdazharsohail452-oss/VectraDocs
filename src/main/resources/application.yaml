@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: backed
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_Username}
+    password: your_sqlpasswordS
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true

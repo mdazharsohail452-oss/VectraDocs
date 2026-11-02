@@ -1,0 +1,78 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Java
+target/
+*.class
+
+# React
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+# Python environment and cache
+ai-service/.venv/
+ai-service/venv/
+ai-service/__pycache__/
+
+# React dependencies
+frontend/node_modules/
+
+# Uploaded documents and generated data
+uploads/
+*.pdf
+
+# Model files
+*.pt
+*.pth
+*.bin
+*.safetensors
+### VS Code ###
+.vscode/
