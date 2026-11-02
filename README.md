@@ -97,6 +97,7 @@ VectraDocs/
 │
 ├── ai-service/
 │   └── main.py
+|   └── requirements.txt
 │
 ├── frontend/
 │   ├── public/
@@ -152,7 +153,7 @@ The frontend communicates with the Spring Boot backend through REST APIs.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/YOUR_USERNAME/VectraDocs.git](https://github.com/YOUR_USERNAME/VectraDocs.git)
+git clone [https://github.com/YOUR_USERNAME/VectraDocs.git]()
 cd VectraDocs
 ```
 
