@@ -1,0 +1,15 @@
+# VectraDocs AI Service dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+
+# PDF extraction and AI summarization
+PyMuPDF
+transformers
+torch
+
+# Embeddings and vector retrieval
+sentence-transformers
+faiss-cpu
+numpy
+scikit-learn
