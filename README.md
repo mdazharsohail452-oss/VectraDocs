@@ -8,7 +8,7 @@ The platform combines a React frontend, Java Spring Boot backend, and Python Fas
 
 ## Demo Video
 
-▶️ [Watch VectraDocs in Action](https://1drv.ms/v/c/19cdb12e3dfe50bf/IQAFVdTQYoRkQZl4MQzWHsQrATCG3KeNoF57rTa8l1SP9_g?e=dNeYSy)
+▶️ [Watch VectraDocs in Action](https://drive.google.com/file/d/1rFvDozp4C_fFWE-cTSMT9a5_9UFDw_C1/view?usp=drivesdk)
 
 See how VectraDocs uploads a PDF, generates an AI-powered summary, and answers questions using semantic search and Retrieval-Augmented Generation (RAG).
 
