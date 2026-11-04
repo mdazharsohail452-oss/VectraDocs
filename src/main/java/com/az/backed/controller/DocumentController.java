@@ -35,7 +35,7 @@ public class DocumentController {
     public Map<String, Object> upload(
             @RequestParam("file") MultipartFile file) {
 
-        // 1. Validate PDF
+        //  Validate PDF
         if (file.isEmpty()) {
             throw new IllegalArgumentException(
                     "File cannot be empty"
@@ -52,7 +52,7 @@ public class DocumentController {
             );
         }
 
-        // 2. Create and save document in MySQL first
+        //  Creating and saving document in MySQL first
         Document document = new Document();
 
         document.setFilename(file.getOriginalFilename());
@@ -65,7 +65,7 @@ public class DocumentController {
 
         try {
 
-            // 3. Send PDF and the same UUID to Python
+            //  Sendpng PDF and the same UUID to Python
             Map<?, ?> aiResponse =
                     pythonAiService.uploadDocument(file, documentId);
 
@@ -90,7 +90,7 @@ public class DocumentController {
 
             documentRepository.save(savedDocument);
 
-            // 5. Return upload response
+            //  Return upload response
             Map<String, Object> response = new LinkedHashMap<>();
 
             aiResponse.forEach((key, value) ->
@@ -121,7 +121,7 @@ public class DocumentController {
         return documentRepository.findAll();
     }
 
-    // Delete document from FAISS and MySQL
+    // Deleting document from FAISS and MySQL
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteDocument(@PathVariable String id) {
 
