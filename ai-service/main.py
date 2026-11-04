@@ -11,49 +11,39 @@ from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from fastapi import HTTPException
 
-# ==================================================
-# 1. APPLICATION CONFIGURATION
-# ==================================================
-
 app = FastAPI(title="AI-Powered Document Intelligence API")
 
 device = torch.device("cpu")
 
-# Summarization model
+
 SUMMARY_MODEL = "sshleifer/distilbart-cnn-6-6"
 
-# Embedding model
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-# Question-answering model
 GENERATION_MODEL = "google/flan-t5-base"
 
-print("Loading AI models...")
 
-# DistilBART
+
+# DistilBART model
 summary_tokenizer = AutoTokenizer.from_pretrained(SUMMARY_MODEL)
 summary_model = AutoModelForSeq2SeqLM.from_pretrained(SUMMARY_MODEL)
 summary_model.to(device)
 summary_model.eval()
 
-# Sentence Transformer
+
 embedding_model = SentenceTransformer(
     EMBEDDING_MODEL,
     device="cpu"
 )
 
-# Flan-T5
+# Flan-T5 using 
 generation_tokenizer = AutoTokenizer.from_pretrained(GENERATION_MODEL)
 generation_model = AutoModelForSeq2SeqLM.from_pretrained(GENERATION_MODEL)
 generation_model.to(device)
 generation_model.eval()
 
-print("All AI models loaded successfully!")
 
 
-# ==================================================
-# 2. REQUEST MODELS
-# ==================================================
 
 class SummarizeRequest(BaseModel):
     text: str = Field(min_length=1)
@@ -65,20 +55,12 @@ class QuestionRequest(BaseModel):
     top_k: int = Field(default=3, ge=1, le=10)
 
 
-# ==================================================
-# 3. GLOBAL VECTOR DATABASE
-# ==================================================
-
 # FAISS index stores document embeddings.
 vector_index = None
 
-# Stores original text and source information.
+# Storing original text and source information.
 document_chunks = []
 
-
-# ==================================================
-# 4. PDF TEXT EXTRACTION
-# ==================================================
 
 def extract_pdf_pages(pdf_bytes):
 
@@ -112,10 +94,6 @@ def extract_pdf_pages(pdf_bytes):
         doc.close()
 
 
-# ==================================================
-# 5. TEXT CHUNKING FOR SUMMARIZATION
-# ==================================================
-
 def split_summary_chunks(text, chunk_size=500, overlap=50):
 
     token_ids = summary_tokenizer.encode(
@@ -144,10 +122,6 @@ def split_summary_chunks(text, chunk_size=500, overlap=50):
     return chunks
 
 
-# ==================================================
-# 6. TEXT CHUNKING FOR RAG
-# ==================================================
-
 def split_rag_chunks(text, chunk_size=180, overlap=30):
 
     words = text.split()
@@ -167,10 +141,6 @@ def split_rag_chunks(text, chunk_size=180, overlap=30):
 
     return chunks
 
-
-# ==================================================
-# 7. ABSTRACTIVE SUMMARIZATION
-# ==================================================
 
 def abstractive_summarize(text):
 
@@ -197,10 +167,6 @@ def abstractive_summarize(text):
         skip_special_tokens=True
     )
 
-
-# ==================================================
-# 8. EXTRACTIVE SUMMARIZATION
-# ==================================================
 
 def extractive_summarize(text, top_n=8):
 
@@ -253,10 +219,6 @@ def extractive_summarize(text, top_n=8):
         return text
 
 
-# ==================================================
-# 9. COMPLETE SUMMARIZATION PIPELINE
-# ==================================================
-
 def process_document(text):
 
     if not text.strip():
@@ -264,7 +226,7 @@ def process_document(text):
 
     chunks = split_summary_chunks(text)
 
-    # Map stage
+    # Maping stage
     chunk_summaries = [
         abstractive_summarize(chunk)
         for chunk in chunks
@@ -277,7 +239,7 @@ def process_document(text):
         combined_text
     )
 
-    # Extractive alternative
+    # Extractive alternative.
     extractive = extractive_summarize(text)
 
     original_words = len(text.split())
@@ -299,11 +261,6 @@ def process_document(text):
         "chunks_processed": len(chunks)
     }
 
-
-# ==================================================
-# 10. EMBEDDING GENERATION
-# ==================================================
-
 def generate_embeddings(texts):
 
     embeddings = embedding_model.encode(
@@ -318,9 +275,8 @@ def generate_embeddings(texts):
     )
 
 
-# ==================================================
-# 11. STORE DOCUMENT CHUNKS IN FAISS
-# ==================================================
+
+# 11. STORING DOCUMENT CHUNKS IN FAISS
 
 def store_document_chunks(pages, filename, document_id):
 
@@ -370,10 +326,6 @@ def store_document_chunks(pages, filename, document_id):
     return len(new_chunks)
 
 
-# ==================================================
-# 12. RETRIEVE RELEVANT DOCUMENT CHUNKS
-# ==================================================
-
 def retrieve_relevant_chunks(question, document_id, top_k=3):
 
     if vector_index is None or vector_index.ntotal == 0:
@@ -386,13 +338,6 @@ def retrieve_relevant_chunks(question, document_id, top_k=3):
         str(item["document_id"]).strip()
         for item in document_chunks
     )
-
-    print("\n========== RAG DEBUG ==========")
-    print("Requested document ID:", repr(requested_id))
-    print("Stored document IDs:", stored_ids)
-    print("Total stored chunks:", len(document_chunks))
-    print("FAISS vectors:", vector_index.ntotal)
-    print("================================\n")
 
     query_embedding = generate_embeddings([question])
 
@@ -433,11 +378,6 @@ def retrieve_relevant_chunks(question, document_id, top_k=3):
         )
 
     return results
-
-
-# ==================================================
-# 13. GENERATE ANSWER USING RETRIEVED CONTEXT
-# ==================================================
 
 def generate_rag_answer(question, retrieved_chunks):
 
@@ -487,9 +427,6 @@ Answer:
     return answer
 
 
-# ==================================================
-# 14. HEALTH CHECK
-# ==================================================
 
 @app.get("/health")
 def health_check():
@@ -504,9 +441,7 @@ def health_check():
     }
 
 
-# ==================================================
-# 15. TEXT SUMMARIZATION API
-# ==================================================
+#text summarization api
 
 @app.post("/summarize")
 async def summarize(request: SummarizeRequest):
@@ -530,11 +465,6 @@ async def summarize(request: SummarizeRequest):
             status_code=500,
             detail=str(e)
         )
-
-
-# ==================================================
-# 16. PDF SUMMARIZATION API
-# ==================================================
 
 @app.post("/summarize-pdf")
 async def summarize_pdf(file: UploadFile = File(...)):
@@ -584,9 +514,6 @@ async def summarize_pdf(file: UploadFile = File(...)):
         await file.close()
 
 
-# ==================================================
-# 17. RAG DOCUMENT UPLOAD API
-# ==================================================
 
 @app.post("/rag/upload")
 async def upload_document(
@@ -657,11 +584,6 @@ async def upload_document(
     finally:
         await file.close()
 
-
-# ==================================================
-# 18. RAG QUESTION ANSWERING API
-# ==================================================
-
 @app.post("/rag/ask")
 async def ask_question(request: QuestionRequest):
 
@@ -719,10 +641,6 @@ async def ask_question(request: QuestionRequest):
            detail=str(e)
        )
 
-
-# ==================================================
-# 19. VECTOR DATABASE STATUS
-# ==================================================
 
 @app.get("/rag/status")
 def rag_status():
