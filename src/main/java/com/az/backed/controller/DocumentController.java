@@ -69,7 +69,7 @@ public class DocumentController {
             Map<?, ?> aiResponse =
                     pythonAiService.uploadDocument(file, documentId);
 
-            // 4. Update metadata using Python response
+            //  Update metadata using Python response
             savedDocument.setFilename(
                     String.valueOf(aiResponse.get("filename"))
             );
